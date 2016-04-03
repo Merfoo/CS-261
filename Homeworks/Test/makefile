@@ -1,15 +1,17 @@
-CXX = gcc
+CC = gcc
 CFLAGS = 
 EXE = printPrimes
 
 SRCS = PrintPrime.c
-OBJS = $(SRCS: .c = .o)
+OBJS = $(SRCS:.c=.o)
 
-$(EXE): $(SRCS)
-	$(CXX) $(CXXFLAGS) $(SRCS) -o $@
+$(EXE): $(OBJS)
+	$(CC) $(CFLAGS) $^ -o $@
 
-$(OBJS): $(SRCS)
-	$(CXX) $(CXXFLAGS) -c $(@:.c=.o)
+%.o: %.cpp
+	$(CC) $(CFLAGS) -c $< -o $@
 
+.PHONY: clean
+	 
 clean:
 	rm -f *.o $(EXE)

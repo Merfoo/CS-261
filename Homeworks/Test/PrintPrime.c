@@ -18,7 +18,7 @@ int isPrime(int x)
 
     int i = 2;
 
-    for(i = 2; i <= x / 2; i++)
+    for(i = 2; i * i < x; i++)
         if(x % i == 0)
             return 0;
 
