@@ -82,6 +82,28 @@ void deleteDynArr(DynArr *v)
 void _dynArrSetCapacity(DynArr *v, int newCap)
 {
 	/* FIXME: You will write this function */
+
+    /* Make sure a valid capacity was given */
+    assert(newCap >= 0);
+
+    /* If the new capacity is the same as the current, do nothing */
+    if(v->capacity == newCap)
+        return;
+
+    /* Create new dynamic array with new capacity size */
+    DynArr* newV = newDynArr(newCap);
+
+    /* Copy over the data from the current dynamic array to new one */
+    int i = 0; 
+
+    for(i = 0; i < v->size && i < newCap; i++)
+        newV->data[i] = v->data[i];
+
+    newV->size = i;
+
+    /* Delete current dynamic array and set it to the new one */
+    deleteDynArr(v);
+    v = newV;
 }
 
 /* Get the size of the dynamic array
@@ -108,6 +130,14 @@ int sizeDynArr(DynArr *v)
 void addDynArr(DynArr *v, TYPE val)
 {
 	/* FIXME: You will write this function */
+
+    /* Check if there is room for new data, if not, expand */
+    if(v->size >= v->capacity)
+        _dynArrSetCapacity(v, v->capacity * 2);
+
+    /* Add data to end of array, increase size variable */
+    v->data[v->size] = val;
+    v->size++;
 }
 
 /*	Get an element from the dynamic array from a specified position
@@ -123,7 +153,9 @@ void addDynArr(DynArr *v, TYPE val)
 TYPE getDynArr(DynArr *v, int pos)
 {
 	/* FIXME: You will write this function */
-	return 1;
+    
+    /* Return value at given index in array */
+	return v->data[pos];
 }
 
 /*	Put an item into the dynamic array at the specified location,
@@ -140,6 +172,22 @@ TYPE getDynArr(DynArr *v, int pos)
 void putDynArr(DynArr *v, int pos, TYPE val)
 {
 	/* FIXME: You will write this function */
+
+    /* Check if there is room for new element, if not, expand */
+    if(v->size >= v->capacity)
+        _dynArrSetCapacity(v, v->capacity * 2);
+
+    /* 
+    * Loop over array, inserting val at index pos and shifting
+    * elements right of the element over 1 to the right
+    */
+    int i = v->size;
+
+    for(i = v->size; i > pos; i--)
+        v->data[i] = v->data[i - 1];
+
+    v->data[pos] = val;
+    v->size++;
 }
 
 /*	Swap two specified elements in the dynamic array
@@ -154,6 +202,11 @@ void putDynArr(DynArr *v, int pos, TYPE val)
 void swapDynArr(DynArr *v, int i, int  j)
 {
 	/* FIXME: You will write this function */
+
+    /* Swap variables using temp variable */
+    TYPE temp = v->data[i];
+    v->data[i] = v->data[j];
+    v->data[j] = temp;
 }
 
 /*	Remove the element at the specified location from the array,
@@ -170,6 +223,14 @@ void swapDynArr(DynArr *v, int i, int  j)
 void removeAtDynArr(DynArr *v, int idx)
 {
 	/* FIXME: You will write this function */
+
+    /* Shift over alll elements after idx left one, decrease size */
+    int i = idx;
+
+    for(i = idx; i < v->size - 1; i++)
+        v->data[i] = v->data[i + 1];
+
+    v->size--;
 }
 
 /* ************************************************************************
@@ -187,7 +248,9 @@ void removeAtDynArr(DynArr *v, int idx)
 int isEmptyDynArr(DynArr *v)
 {
 	/* FIXME: You will write this function */
-	return 1;
+
+    /* Return true if size == 0 */
+	return v->size == 0;
 }
 
 /* 	Push an element onto the top of the stack
@@ -202,6 +265,9 @@ int isEmptyDynArr(DynArr *v)
 void pushDynArr(DynArr *v, TYPE val)
 {
 	/* FIXME: You will write this function */
+
+    /* Add element to end of array */
+    addDynArr(v, val);
 }
 
 /*	Returns the element at the top of the stack 
@@ -214,7 +280,9 @@ void pushDynArr(DynArr *v, TYPE val)
 TYPE topDynArr(DynArr *v)
 {
 	/* FIXME: You will write this function */
-	return 1;
+
+    /* Return last element of array */
+	return v->data[v->size - 1];
 }
 
 /* Removes the element on top of the stack 
@@ -228,6 +296,9 @@ TYPE topDynArr(DynArr *v)
 void popDynArr(DynArr *v)
 {
 	/* FIXME: You will write this function */
+
+    /* Decrement size by 1, thus removing the last element */
+    v->size--;
 }
 
 /* ************************************************************************
@@ -246,6 +317,14 @@ void popDynArr(DynArr *v)
 int containsDynArr(DynArr *v, TYPE val)
 {
 	/* FIXME: You will write this function */
+
+    /* Loop through array checking if val exists inside of it */
+    int i = 0;
+
+    for(i = 0; i < v->size; i++)
+        if(v->data[i] == val)
+            return i;
+
 	return -1;
 }
 
