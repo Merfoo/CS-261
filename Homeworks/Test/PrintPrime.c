@@ -5,6 +5,7 @@
 */
 
 #include<stdio.h>
+#include "dynArray.h"
 
 /*
   Description: Checks if an integer is a prime number
@@ -25,8 +26,37 @@ int isPrime(int x)
     return 1;
 }
 
+void printArr(DynArr* arr)
+{
+    int i = 0;
+
+    for(i = 0; i < arr->size; i++)
+        printf("%c   ", arr->data[i]);
+
+    printf("\n");
+}
+
 int main()
 {
+    DynArr* arr = newDynArr(0);
+    printf("%d :: %d\n", arr->size, arr->capacity);
+    _dynArrSetCapacity(arr, arr->capacity * 2);
+    printf("%d :: %d\n", arr->size, arr->capacity);
+    printArr(arr);
+
+    addDynArr(arr, 'a');
+    printf("%d :: %d\n", arr->size, arr->capacity);
+    addDynArr(arr, 'b');
+    printf("%d :: %d\n", arr->size, arr->capacity);
+    removeAtDynArr(arr, 0);
+    addDynArr(arr, 'c');
+    printf("%d :: %d\n", arr->size, arr->capacity);
+    addDynArr(arr, 'd');
+    printf("%d :: %d\n", arr->size, arr->capacity);
+    addDynArr(arr, 'e');   
+    printf("%d :: %d\n", arr->size, arr->capacity);
+    printArr(arr);
+    return 0;
     int n = 0;
 
     while(1)

@@ -2,13 +2,14 @@ CC = gcc
 CFLAGS = 
 EXE = printPrimes
 
-SRCS = PrintPrime.c
-OBJS = $(SRCS:.c=.o)
+HDRS = dynArray.h
+SRCS = PrintPrime.c dynArray.c
+OBJS := $(SRCS:.c=.o)
 
 $(EXE): $(OBJS)
 	$(CC) $(CFLAGS) $^ -o $@
 
-%.o: %.cpp
+%.o: %.cpp $(HDRS)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 .PHONY: clean
