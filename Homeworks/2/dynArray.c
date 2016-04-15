@@ -212,7 +212,7 @@ void swapDynArr(DynArr *v, int i, int  j)
 {
 	/* FIXME: You will write this function */
 
-    /* Check both i and j are >= and < v->size */
+    /* Check both i and j are >= 0 and < v->size */
     assert((i >= 0 && i < v->size) && (j >= 0 && j < v->size));
 
     /* Swap variables using temp variable */

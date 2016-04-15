@@ -1,6 +1,7 @@
 /*	stackapp.c: Stack application. */
 #include <stdio.h>
 #include <stdlib.h>
+#include <assert.h>
 #include "dynArray.h"
 
 
@@ -31,8 +32,49 @@ char nextChar(char* s)
 */
 int isBalanced(char* s)
 {
-	/* FIXME: You will write this function */		
-	return 0;
+	/* FIXME: You will write this function */
+
+    /* Check if s is null */
+    assert(s);    
+
+    /* Create stack to hold letters */
+    DynArr* stack = newDynArr(16);
+    char c = nextChar(s);
+		
+    while(c)
+    {
+        if(c == '(' || c == '{' || c == '[')
+            pushDynArr(stack, c);
+
+        else if(c == ')' || c == '}' || c == ']')
+        {
+            int balanced = 0;
+
+            if(!isEmptyDynArr(stack))
+            {
+                char top = topDynArr(stack);
+
+                if(top == '(' && c == ')')
+                    balanced = 1;
+
+                else if(top == '{' && c == '}')
+                    balanced = 1;
+
+                else if(top == '[' && c == ']')
+                    balanced = 1;
+            }
+
+            if(balanced)
+                popDynArr(stack);
+
+            else
+                return 0;
+        }
+
+        c = nextChar(s);
+    }
+
+	return isEmptyDynArr(stack);
 }
 
 int main(int argc, char* argv[]){
