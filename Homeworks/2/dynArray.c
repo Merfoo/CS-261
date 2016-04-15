@@ -83,8 +83,8 @@ void _dynArrSetCapacity(DynArr *v, int newCap)
 {
 	/* FIXME: You will write this function */
 
-    /* Make sure a valid capacity was given */
-    assert(newCap >= 0);
+    /* Make sure v, v->data aren't null and a valid capacity was given */
+    assert((v && v->data) && newCap >= 0);
 
     /* If the new capacity is the same as the current, do nothing */
     if(v->capacity == newCap)
@@ -131,6 +131,9 @@ void addDynArr(DynArr *v, TYPE val)
 {
 	/* FIXME: You will write this function */
 
+    /* Check v and v->data aren't null */
+    assert(v && v->data);
+
     /* Check if there is room for new data, if not, expand */
     if(v->size >= v->capacity)
         _dynArrSetCapacity(v, v->capacity * 2);
@@ -154,6 +157,9 @@ TYPE getDynArr(DynArr *v, int pos)
 {
 	/* FIXME: You will write this function */
     
+    /* Check v and v->data aren't null, 0 <= pos < size */
+    assert((v && v->data) && (pos >= 0 && pos < v->size));
+ 
     /* Return value at given index in array */
 	return v->data[pos];
 }
@@ -172,6 +178,9 @@ TYPE getDynArr(DynArr *v, int pos)
 void putDynArr(DynArr *v, int pos, TYPE val)
 {
 	/* FIXME: You will write this function */
+
+    /* Check v and v->data aren't null, 0 <= pos < v->size */
+    assert((v && v->data) && (pos >= 0 && pos < v->size));
 
     /* Check if there is room for new element, if not, expand */
     if(v->size >= v->capacity)
@@ -203,6 +212,9 @@ void swapDynArr(DynArr *v, int i, int  j)
 {
 	/* FIXME: You will write this function */
 
+    /* Check both i and j are >= and < v->size */
+    assert((i >= 0 && i < v->size) && (j >= 0 && j < v->size));
+
     /* Swap variables using temp variable */
     TYPE temp = v->data[i];
     v->data[i] = v->data[j];
@@ -223,6 +235,9 @@ void swapDynArr(DynArr *v, int i, int  j)
 void removeAtDynArr(DynArr *v, int idx)
 {
 	/* FIXME: You will write this function */
+
+    /* Check v and v->data aren't null, 0 <= idx < v->size */
+    assert((v && v->data) && (idx >= 0 && idx < v->data));
 
     /* Shift over alll elements after idx left one, decrease size */
     int i = idx;
@@ -248,6 +263,9 @@ void removeAtDynArr(DynArr *v, int idx)
 int isEmptyDynArr(DynArr *v)
 {
 	/* FIXME: You will write this function */
+
+    /* Check v and v->data aren't null */
+    assert(v && v->data);
 
     /* Return true if size == 0 */
 	return v->size == 0;
@@ -281,6 +299,9 @@ TYPE topDynArr(DynArr *v)
 {
 	/* FIXME: You will write this function */
 
+    /* Check if v and v->data aren't null and size > 0 */
+    assert((v && v->data) && v->size > 0);
+
     /* Return last element of array */
 	return v->data[v->size - 1];
 }
@@ -296,6 +317,9 @@ TYPE topDynArr(DynArr *v)
 void popDynArr(DynArr *v)
 {
 	/* FIXME: You will write this function */
+
+    /* Check if v is null, size > 0 */
+    assert(v && v->size > 0);
 
     /* Decrement size by 1, thus removing the last element */
     v->size--;
@@ -317,6 +341,9 @@ void popDynArr(DynArr *v)
 int containsDynArr(DynArr *v, TYPE val)
 {
 	/* FIXME: You will write this function */
+
+    /* Check if v and v->data aren't null */
+    assert(v && v->data);
 
     /* Loop through array checking if val exists inside of it */
     int i = 0;
