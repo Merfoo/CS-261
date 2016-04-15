@@ -1,0 +1,3 @@
+1) Big-Oh execution of while loop at end of program: O(n)
+2) Big-Oh execution of inner while loop: O(n)
+3) Big-Oh execution of outermost while loop: O(n^2)
