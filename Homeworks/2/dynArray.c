@@ -237,7 +237,7 @@ void removeAtDynArr(DynArr *v, int idx)
 	/* FIXME: You will write this function */
 
     /* Check v and v->data aren't null, 0 <= idx < v->size */
-    assert((v && v->data) && (idx >= 0 && idx < v->data));
+    assert((v && v->data) && (idx >= 0 && idx < v->size));
 
     /* Shift over alll elements after idx left one, decrease size */
     int i = idx;
