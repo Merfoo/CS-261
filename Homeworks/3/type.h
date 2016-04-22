@@ -12,8 +12,8 @@
 #define __TYPE_H
 
 # ifndef TYPE
-# define TYPE      int
-# define TYPE_SIZE sizeof(int)
+# define TYPE      double
+# define TYPE_SIZE sizeof(double)
 # endif
 
 #define TYPE1 char
