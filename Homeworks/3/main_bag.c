@@ -19,12 +19,19 @@ int main(int argc, char* argv[]){
       int i;
       for( i = 0 ; i < n; ++i)
     {
-	    addToBag(b, (TYPE)i);/*Add elements*/
+	    addToBag(b, (TYPE)(i));/*Add elements*/
     }
+        addToBag(b, (TYPE)9);
+        addToBag(b, (TYPE)3);
+        addToBag(b, (TYPE)9);
      double t1 = getMilliseconds();/*Time before contains()*/
-      printf("Found? %d\n", bagContains(b, (TYPE)10));
+      printf("Found? %d\n", bagContains(b, (TYPE)20));
       double t2 = getMilliseconds();/*Time after contains()*/
+        printf("Size: %d\n", b->l->size);
+        removeFromBag(b, (TYPE)9);
+        printf("Size: %d\n", b->l->size);
       printf("%d %g\n", n, t2-t1);
+        freeBag(b);
     }
   else
     printf("Please enter the number of elements to add.\n");

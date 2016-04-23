@@ -2,7 +2,6 @@
 #include "type.h"
 #include <assert.h>
 #include <stdlib.h>
-#include <stdio.h>
 /*
 	function to initialize the list, set the sentinels and set the size
 	param l the list
@@ -241,8 +240,6 @@ int isEmptyList(struct list *l) {
 int _contains_recursive(struct DLink* current, TYPE e){
 	/* FIX ME*/
 
-    printf("Inside recursive contains\n");
-
     /* Check if current is null */
     assert(current);
 
@@ -252,15 +249,11 @@ int _contains_recursive(struct DLink* current, TYPE e){
     if(!current->prev)
         current = current->next;
 
-printf("Past current prev head thing \n");
-    
     /* If current->next is null we've come across the tail,
     *  thus the list doesn't contain the value e, return false (0)
     */
     if(!current->next)
         return 0;
-    
-printf("[ast value comparison\n");
     
     /* If the current->value is == to e then return true(1) */
     if(current->value == e)
@@ -287,7 +280,7 @@ void _remove_recursive(struct DLink* current, TYPE e, int* sz){
     /* Create tmp variable for next link */
     struct DLink* next = current->next;
 
-    /* If the next is null, we're at the null and at the end of the list */
+    /* If the next is null, we're at the tail and at the end of the list */
     if(!next)
         return;
 
@@ -297,7 +290,7 @@ void _remove_recursive(struct DLink* current, TYPE e, int* sz){
         current->prev->next = current->next;
         current->next->prev = current->prev;
         free(current);
-        *sz--;
+        (*sz)--;
     }
     
     /* Continue recursively calling with next link as starting point */
@@ -323,4 +316,20 @@ void listRemove (struct list *l, TYPE e) {
 void freeList(struct list *q)
 {
     /* FIX ME*/
+
+    /* Check if q is null */
+    assert(q);
+
+    /* Create link for iterating over list */
+    struct DLink* curLnk = q->head;
+
+    /* Iterate over list, deleting each link, including head/tail */
+    while(curLnk)
+    {
+        struct DLink* nextLnk = curLnk->next;
+        free(curLnk);
+        curLnk = nextLnk;
+    }
+
+    free(q);
 }

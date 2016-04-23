@@ -40,10 +40,11 @@ int main (int argc, const char * argv[])
 									backCirListDeque(testDeque));
 	/* remove the front of the deque */
 	removeFrontCirListDeque(testDeque); 
-	/* it should print out front: 2.0; back: 2.0 */ 
+    /* it should print out front: 2.0; back: 2.0 */ 
 	printf("front: %g; back: %g\n\n", frontCirListDeque(testDeque), 
 									backCirListDeque(testDeque));
 
+    removeFrontCirListDeque(testDeque);
     freeCirListDeque(testDeque);
 
 	return EXIT_SUCCESS;

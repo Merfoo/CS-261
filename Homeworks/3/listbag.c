@@ -71,5 +71,13 @@ int isEmptyBag(struct bag* b){
 void freeBag(struct bag *b)
 {
     /* FIX ME*/
-}
 
+    /* Check if b and b->l is null */
+    assert(b && b->l);
+    
+    /* Free list in bag struct b */
+    freeList(b->l);
+
+    /* Free bag struct b */
+    free(b);
+}
