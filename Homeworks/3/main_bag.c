@@ -18,9 +18,11 @@ int main(int argc, char* argv[]){
       int n = atoi(s);/*number of elements to add*/
       int i;
       for( i = 0 ; i < n; ++i)
-	addToBag(b, (TYPE)i);/*Add elements*/
-      double t1 = getMilliseconds();/*Time before contains()*/
-      bagContains(b, (TYPE)0);
+    {
+	    addToBag(b, (TYPE)i);/*Add elements*/
+    }
+     double t1 = getMilliseconds();/*Time before contains()*/
+      printf("Found? %d\n", bagContains(b, (TYPE)10));
       double t2 = getMilliseconds();/*Time after contains()*/
       printf("%d %g\n", n, t2-t1);
     }

@@ -19,6 +19,12 @@ void initBag(struct bag* b){
 	Post: val is added to the bag ie the list implementing the bag*/
 void addToBag(struct bag* b, TYPE val){
  	/*FIX ME*/
+
+    /* Check if b is null */
+    assert(b);
+
+    /* Add element to bag */
+    addBackList(b->l, val);
 }
 
 /* Function to remove an element from the bag:
@@ -27,6 +33,12 @@ void addToBag(struct bag* b, TYPE val){
 */
 void removeFromBag(struct bag* b, TYPE val){
 	/*FIX ME*/
+
+    /* Check if b is null */
+    assert(b);
+
+    /* Remove element from bag */
+    listRemove(b->l, val);
 }
 
 /*Function to test if an element exists in the bag
@@ -34,6 +46,12 @@ void removeFromBag(struct bag* b, TYPE val){
 */
 int bagContains(struct bag* b, TYPE val){
 	/* FIX ME*/
+
+    /* Check if b is null */
+    assert(b);
+
+    /* Check if val is in the bag */
+    return listContains(b->l, val);
 }
 
 /*Function to test if the bag is empty
@@ -42,6 +60,12 @@ int bagContains(struct bag* b, TYPE val){
 
 int isEmptyBag(struct bag* b){
 	/* FIX ME*/
+
+    /* Check if b is null */
+    assert(b);
+
+    /* Check if bag is empty */
+    return isEmptyList(b->l);
 }
 
 void freeBag(struct bag *b)

@@ -2,7 +2,7 @@
 #include "type.h"
 #include <assert.h>
 #include <stdlib.h>
-
+#include <stdio.h>
 /*
 	function to initialize the list, set the sentinels and set the size
 	param l the list
@@ -12,6 +12,25 @@
 
 void initList (struct list *l) {
 	/* FIX ME*/
+    
+    /* Check if l is null */
+    assert(l);
+
+    /* Initialize head and tail links in list */
+    l->head = (struct DLink*)malloc(sizeof(struct DLink));
+    assert(l->head);
+    l->head->value = 0;
+    l->head->next = l->tail;
+    l->head->prev = 0;
+
+    l->tail = (struct DLink*)malloc(sizeof(struct DLink));
+    assert(l->tail);
+    l->tail->value = 0;
+    l->tail->next = 0;
+    l->tail->prev = l->head;
+
+    /* Init size to 0 */
+    l->size = 0;
 }
 
 
@@ -29,6 +48,26 @@ void initList (struct list *l) {
 void _addLink(struct list *l, struct DLink *lnk, TYPE v)
 {
 	/* FIX ME*/
+
+    /* Check if l, lnk is null */
+    assert(l && lnk);
+
+    /* Create link value v */
+    struct DLink* newLnk = (struct DLink*)malloc(sizeof(struct DLink));
+    assert(newLnk);
+
+    newLnk->value = v;
+    newLnk->next = lnk;
+    newLnk->prev = lnk->prev;
+
+    /* Link lnk to newLnk */
+    lnk->prev = newLnk;
+
+    /* Update links around newLnk */
+    newLnk->prev->next = newLnk;
+
+    /* Incremement size by 1 */
+    l->size++;
 }
 
 
@@ -44,6 +83,12 @@ void _addLink(struct list *l, struct DLink *lnk, TYPE v)
 void addFrontList(struct list *l, TYPE e)
 {
 	/* FIX ME*/
+
+    /* Check if l is null */
+    assert(l);
+
+    /* Add new link to front of list with value e */
+    _addLink(l, l->head->next, e);
 }
 
 /*
@@ -56,6 +101,12 @@ void addFrontList(struct list *l, TYPE e)
 
 void addBackList(struct list *l, TYPE e) {
 	/* FIX ME*/
+
+    /* Check if l is null */
+    assert(l);
+
+    /* Add new link to back of the list with value e */
+    _addLink(l, l->tail, e);
 }
 
 /*
@@ -69,6 +120,12 @@ void addBackList(struct list *l, TYPE e) {
 
 TYPE frontList (struct list *l) {
 	/* FIX ME*/
+
+    /* Check if l is null and is l empty */
+    assert(l && !isEmptyList(l));
+
+    /* Return the first links value */
+    return l->head->next->value;
 }
 
 /*
@@ -83,6 +140,12 @@ TYPE frontList (struct list *l) {
 TYPE backList(struct list *l)
 {
 	/* FIX ME*/
+
+    /* Check if l is null and is l empty */
+    assert(l && !isEmptyList(l));
+
+    /* Return the last links value */
+    return l->tail->prev->value;
 }
 
 /*
@@ -98,6 +161,19 @@ TYPE backList(struct list *l)
 void _removeLink(struct list *l, struct DLink *lnk)
 {
 	/* FIX ME*/
+
+    /* Check if l and lnk is null */
+    assert(l && lnk);
+
+    /* Connect links around lnk to eachother */
+    lnk->prev->next = lnk->next;
+    lnk->next->prev = lnk->prev;
+
+    /* Free lnk */
+    free(lnk);
+
+    /* Decrease list size by 1 */
+    l->size--;
 }
 
 /*
@@ -111,6 +187,12 @@ void _removeLink(struct list *l, struct DLink *lnk)
 
 void removeFrontList(struct list *l) {
 	/* FIX ME*/
+
+    /* Check if l is null and l is empty */
+    assert(l && !isEmptyList(l));
+
+    /* Remove first link */
+    _removeLink(l, l->head->next);
 }
 
 /*
@@ -125,6 +207,12 @@ void removeFrontList(struct list *l) {
 void removeBackList(struct list *l)
 {
 	/* FIX ME*/
+
+    /* Check if l is null and l is empty */
+    assert(l && !isEmptyList(l));
+
+    /* Remove last link */
+    _removeLink(l, l->tail->prev);
 }
 
 /*
@@ -136,6 +224,12 @@ void removeBackList(struct list *l)
 
 int isEmptyList(struct list *l) {
 	/* FIX ME*/
+
+    /* Check if l is null */
+    assert(l);
+
+    /* Return true (1) is size == 0, false (0) otherwise */
+    return l->size == 0;
 }
 
 
@@ -146,6 +240,35 @@ int isEmptyList(struct list *l) {
  */
 int _contains_recursive(struct DLink* current, TYPE e){
 	/* FIX ME*/
+
+    printf("Inside recursive contains\n");
+
+    /* Check if current is null */
+    assert(current);
+
+    /* If current->prev is null we're at the head, skip to the
+    *  next since head doesn't contain any value
+    */
+    if(!current->prev)
+        current = current->next;
+
+printf("Past current prev head thing \n");
+    
+    /* If current->next is null we've come across the tail,
+    *  thus the list doesn't contain the value e, return false (0)
+    */
+    if(!current->next)
+        return 0;
+    
+printf("[ast value comparison\n");
+    
+    /* If the current->value is == to e then return true(1) */
+    if(current->value == e)
+        return 1;
+
+    /* Else call this function again with the next 
+    *  link and return the result */
+    return _contains_recursive(current->next, e);
 }
 
 /* Wrapper function for contains
@@ -160,10 +283,40 @@ int listContains (struct list *l, TYPE e) {
 /* Recursive implementation of remove()*/
 void _remove_recursive(struct DLink* current, TYPE e, int* sz){
 	/* FIX ME*/
+    
+    /* Create tmp variable for next link */
+    struct DLink* next = current->next;
+
+    /* If the next is null, we're at the null and at the end of the list */
+    if(!next)
+        return;
+
+    /* If link value == e, remove it from the list */
+    if(current->value == e)
+    {
+        current->prev->next = current->next;
+        current->next->prev = current->prev;
+        free(current);
+        *sz--;
+    }
+    
+    /* Continue recursively calling with next link as starting point */
+    _remove_recursive(next, e, sz);
 }
+
 /* Wrapper for remove()*/
 void listRemove (struct list *l, TYPE e) {
 	/* FIX ME*/
+
+    /* Check if l is null */
+    assert(l);
+
+    /* If the list is empty just return */
+    if(isEmptyList(l))
+        return;
+
+    /* Call _remove_recursive with the entire list */
+    _remove_recursive(l->head->next, e, &l->size);
 }
 
 
@@ -171,6 +324,3 @@ void freeList(struct list *q)
 {
     /* FIX ME*/
 }
-
-
-
