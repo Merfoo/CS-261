@@ -17,9 +17,9 @@ int main(int argc, char* argv[]){
       char* s=argv[1];
       int n = atoi(s);/*number of elements to add*/
       int i;
-      for( i = 0 ; i < n; ++i)
+      for( i = 1; i < n; ++i)
     {
-	    addToBag(b, (TYPE)(i));/*Add elements*/
+	    addFrontList(b->l, (TYPE)(i));/*Add elements*/
     }
         addToBag(b, (TYPE)9);
         addToBag(b, (TYPE)3);
@@ -30,11 +30,15 @@ int main(int argc, char* argv[]){
         printf("Size: %d\n", b->l->size);
         removeFromBag(b, (TYPE)9);
         printf("Size: %d\n", b->l->size);
+        addFrontList(b->l, 10.0);
+        printf("Front: %f\n", frontList(b->l));
       printf("%d %g\n", n, t2-t1);
         freeBag(b);
     }
   else
-    printf("Please enter the number of elements to add.\n");
+  {
+      printf("Please enter the number of elements to add.\n");
+                }
 
   return 0;
 

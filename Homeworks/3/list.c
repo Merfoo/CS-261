@@ -17,13 +17,13 @@ void initList (struct list *l) {
 
     /* Initialize head and tail links in list */
     l->head = (struct DLink*)malloc(sizeof(struct DLink));
-    assert(l->head);
+    l->tail = (struct DLink*)malloc(sizeof(struct DLink));
+    assert(l->head && l->tail);
+
     l->head->value = 0;
     l->head->next = l->tail;
     l->head->prev = 0;
 
-    l->tail = (struct DLink*)malloc(sizeof(struct DLink));
-    assert(l->tail);
     l->tail->value = 0;
     l->tail->next = 0;
     l->tail->prev = l->head;
