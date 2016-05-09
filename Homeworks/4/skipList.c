@@ -14,6 +14,10 @@ Main Function
  post: prints out the contents of the skip list */
 
 void test(){
+
+    /* Seed psuedo-random number generator */
+    srand(time(NULL));
+
 	int i;
 	
 	/*  FIX ME */
@@ -52,6 +56,9 @@ Internal Functions
 int flipSkipLink(void)
 {
 	/*  FIX ME */	
+
+    /* Return 0 or 1 from rand() */
+    return rand() % 2;
 }
 
 /* Move to the right as long as the next element is smaller than the input value:
@@ -60,10 +67,17 @@ int flipSkipLink(void)
  pre:	current is not NULL
  post: returns one link before the link that contains the input value e */
 struct skipLink * slideRightSkipList(struct skipLink *current, TYPE e){
-	while ((current->next != 0) && LT(current->next->value, e))
+	
+    /* Check if current is null */
+    assert(current);
+
+    while ((current->next != 0) && LT(current->next->value, e))
 		current = current->next;
 	
 	/* FIX ME */
+
+    /* Return link before link that contains value e */
+    return current;
 }
 
 
@@ -117,16 +131,56 @@ Public Functions
 void initSkipList (struct skipList *slst) 
 {
 	/* FIX ME*/
+
+    /* Check if slst is null */
+    assert(slst);
+
+    /* Declare and initialize skip list sentinel */
+    slst->topSentinel = (struct skipLink*)malloc(sizeof(struct skipLink));
+    slst->topSentinel->value = 0;
+    slst->topSentinel->next = 0;
+    slst->topSentinel->down = 0;
+
+    /* Initialize skip list size to 0 */
+    slst->size = 0;
 }
 
 /* Checks if an element is in the skip list:
  param: slst -- pointer to the skip list
- param: e -- element to be checked
+ param: e -- 
+element to be checked
  pre:	slst is not null
  post: returns true or false  */
 int containsSkipList(struct skipList *slst, TYPE e)
 {
 	/* FIX ME*/
+
+    /* Check if slst is null */
+    assert(slst);
+
+    /* Loop through list if its not empty */
+    if(sizeSkipList(slst) > 0)
+    {
+        /* Get the link before value e and compare */
+        struct skipLink* curr = slst->topSentinel;
+
+        while(1)
+        {
+            curr = slideRightSkipList(curr, e);
+            
+            /* Return true (1) if value e is found */
+            if(curr->next && EQ(curr->next->value, e))
+                return 1;
+
+            else if(curr->down == 0)
+                break;
+
+            curr = curr->down;
+        }
+    }
+
+    /* Return false (0) if value e is not found */
+    return 0;
 }
 
 
@@ -138,8 +192,39 @@ int containsSkipList(struct skipList *slst, TYPE e)
 void removeSkipList(struct skipList *slst, TYPE e)
 {
 	/* FIX ME*/
-}
 
+    /* Check if slst is null */
+    assert(slst);
+
+    /* Only remove elements if skip list is not empty */
+    if(sizeSkipList(slst) > 0)
+    {
+        struct skipLink* curr = slst->topSentinel;
+
+        /* Slide right to find link before link with value e */
+        while(1)
+        {
+            /* Slide right to find link before link with value e*/
+            curr = slideRightSkipList(curr, e);
+
+            /* If next link value is e, free it and fix link connections */
+            if(curr->next && EQ(curr->next->value, e))
+            {
+                struct skipLink* tmp = curr->next;
+
+                curr->next = curr->next->next;
+                free(tmp);
+            }
+
+            /* Exit loop is on bottom list, down link is null */
+            if(curr->down == 0)
+                break;
+
+            /* Set curr to down link */
+            curr = curr->down;
+        }
+    }
+}
 
 
 
@@ -166,6 +251,12 @@ int sizeSkipList(struct skipList *slst)
 {
 	
 	/* FIX ME*/	
+
+    /* Check if slst is null */
+    assert(slst);
+
+    /* Return size of slst */
+    return slst->size;
 }
 
 /* Print the links in the skip list:
