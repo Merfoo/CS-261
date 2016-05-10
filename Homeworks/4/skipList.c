@@ -23,9 +23,36 @@ void test(){
 	/*  FIX ME */
 	
 	/*  Initialize the skip list */
+    struct skipList* list = (struct skipList*)malloc(sizeof(struct skipList));
+    assert(list);
+    initSkipList(list);
+
+    struct skipList* listB = (struct skipList*)malloc(sizeof(struct skipList));
+    assert(listB);
+    initSkipList(listB);
+
+    addSkipList(listB, 10.0);
+    addSkipList(listB, 11.0);
+    addSkipList(listB, 12.0);
+    addSkipList(listB, 13.0);
+
 	
 	/*  Add to the skip list  M = 20 random integers in [0,100] */
-	
+    i = 0;
+    TYPE val;
+    while(i++ < 1)
+    {
+        val = (double)(rand() % 101);
+        printf("Val: %f\n", val);
+    	addSkipList(list, val);
+    }
+
+    addSkipList(list, 1.0);
+    addSkipList(list, 3.0);
+    addSkipList(list, 7.0);
+    addSkipList(list, 6.0);
+    addSkipList(list, 3.0);
+
 	/*  Print out the contents of the skip list in the breadth-first order, starting from top. 
 	 While printing the elements, move to a new line every time you reach the end of one level, 
 	 and move down to the lower level of the skip list. 
@@ -36,12 +63,35 @@ void test(){
 	 3 7 9 14 20
 	 
 	 */
+   
+    printSkipList(list);
+    printf("List size: %d\n", sizeSkipList(list));
 	
 	/* Develop test cases for evaluating the following functions:  
 	 int containsSkipList(struct skipList *slst, TYPE e) 
 	 int removeSkipList(struct skipList *slst, TYPE e)
 	 */
-	
+
+    /* Contains */
+    printf("Contains %f? %d\n", val, containsSkipList(list, val));	
+    printf("Contains 50? %d\n", containsSkipList(list, 50.0));
+    
+    /* Remove */
+    printf("Remove 3.0\n");
+    removeSkipList(list, 3.0);
+    printSkipList(list);
+    printf("List size: %d\n", sizeSkipList(list));
+    
+    /* merge list */
+    printf("Merge\n");
+    mergeSkipList(list, listB);
+    printSkipList(list);
+
+    /* Size */
+    printf("Size: %d\n", sizeSkipList(list));
+
+    /* listB */
+    /*printf("ListB null ? %d\n", listB->topSentinel->value);*/
 }
 
 
@@ -137,6 +187,7 @@ void initSkipList (struct skipList *slst)
 
     /* Declare and initialize skip list sentinel */
     slst->topSentinel = (struct skipLink*)malloc(sizeof(struct skipLink));
+    assert(slst->topSentinel);
     slst->topSentinel->value = 0;
     slst->topSentinel->next = 0;
     slst->topSentinel->down = 0;
@@ -199,6 +250,7 @@ void removeSkipList(struct skipList *slst, TYPE e)
     /* Only remove elements if skip list is not empty */
     if(sizeSkipList(slst) > 0)
     {
+        int foundLink = 0;
         struct skipLink* curr = slst->topSentinel;
 
         /* Slide right to find link before link with value e */
@@ -214,6 +266,7 @@ void removeSkipList(struct skipList *slst, TYPE e)
 
                 curr->next = curr->next->next;
                 free(tmp);
+                foundLink = 1;
             }
 
             /* Exit loop is on bottom list, down link is null */
@@ -222,6 +275,28 @@ void removeSkipList(struct skipList *slst, TYPE e)
 
             /* Set curr to down link */
             curr = curr->down;
+        }
+
+        if(foundLink)
+        {
+            slst->size--;
+
+            /* Remove all empty lists */
+            struct skipLink* head = slst->topSentinel;
+
+            while(head->down)
+            {
+                if(head->next == 0)
+                {
+                    struct skipLink* downHead = head->down;
+                    free(head);
+                    slst->topSentinel = downHead;
+                    head = downHead;
+                }
+
+                else
+                    break;
+            }
         }
     }
 }
@@ -235,11 +310,33 @@ void removeSkipList(struct skipList *slst, TYPE e)
 	post:	the new element is added to the lowest list and randomly to higher-level lists */
 void addSkipList(struct skipList *slst, TYPE e)
 {
+    /* Check if slst is null */
+    assert(slst);
+
 	struct skipLink *downLink, *newLink;
 	downLink = skipLinkAdd(slideRightSkipList(slst->topSentinel,e),e);
 	
 	/* FIX ME*/
+    
+    while(downLink)
+    {
+        /* Create new express lane with new head and new link */
+        newLink = newSkipLink(e, 0, downLink);
+        struct skipLink* newHead = newSkipLink(0, newLink, slst->topSentinel);
 
+        /* Update the new skipList top sentinel to point to new list */
+        slst->topSentinel = newHead;
+
+        /* If need to make new list, update downLink, else set to null */
+        if(flipSkipLink())
+            downLink = newLink;
+
+        else
+            downLink = 0;
+    }
+
+    /* Increase size */
+    slst->size++;
 }
 
 
@@ -266,6 +363,29 @@ int sizeSkipList(struct skipList *slst)
 void printSkipList(struct skipList *slst)
 {
 	/* FIX ME*/
+
+    /* Check if slst is null */
+    assert(slst);
+
+    /* Create link to currHead and currLink */
+    struct skipLink* currHead = slst->topSentinel;
+    struct skipLink* currLink = currHead;
+
+    /* Loop over each link and print the value */
+    while(currHead)
+    {
+        currLink = currLink->next;
+
+        if(currLink)
+            printf("%f\t", currLink->value);
+
+        else
+        {
+            currHead = currHead->down;
+            currLink = currHead;
+            printf("\n");
+        }
+    }
 }
 
 /* Merge two skip lists, by adding elements of skip list 2 to skip list 1 
@@ -279,5 +399,45 @@ void mergeSkipList(struct skipList *slst1, struct skipList *slst2)
 {
 
 	/* FIX ME*/
-	
+
+    /* Check if slst1 and slst2 arm null */
+    assert(slst1 && slst2);
+
+    /* Check if slst1 and slst2 are empty */
+    assert(sizeSkipList(slst1) > 0 && sizeSkipList(slst2) > 0);
+
+    /* Get the head to the bottom list of slst2, the list that has all links */
+    struct skipLink* head = slst2->topSentinel;
+    struct skipLink* currLink = head;
+
+    while(head->down)
+        head = head->down;
+
+    currLink = head->next;
+    
+    /* Loop through all links on bottom list */
+    while(currLink)
+    {
+        /* Create variable to hold currLink value */
+        TYPE currVal = currLink->value;
+
+        /* If slst1 doesn't have currVal, add it */
+        if(!containsSkipList(slst1, currVal))
+            addSkipList(slst1, currVal);
+
+        /* Remove all instances of currVal in slst2 */
+        while(currLink && currVal == currLink->value)
+        {
+            currLink = currLink->next;
+            removeSkipList(slst2, currVal);
+        }
+    }
+
+    /* Free slst2 sentinel */
+    free(slst2->topSentinel);
+    slst2->topSentinel = 0;
+
+    /* Free slst2 */
+    free(slst2);
+    slst2 = 0;
 }
