@@ -213,7 +213,7 @@ void testRemoveNode() {
     myData = tree->root->right->val;
     _removeNode(tree->root, tree->root->val);
     printTestResult( (compare(tree->root->val, myData) == 0), "_removeNode", "Testing remove Root\n");
-
+   
     myData = tree->root->right->left->val;
     _removeNode(tree->root, tree->root->right->val);
     printTestResult( (compare(tree->root->right->val, myData) == 0), "_removeNode", "Testing remove Root->Right\n"); /*Keep in mind that the tree has changed.*/
@@ -246,16 +246,16 @@ int main(int argc, char *argv[]){
 
     /*After implementing your code, please uncommnet the following calls to the test functions and test your code */
     testAddNode();
-	
+    
     printf("\n");
     testContainsBSTree();
 	
     printf("\n");
     testLeftMost();
-	
+
     printf("\n");
     testRemoveLeftMost();
-	
+
     printf("\n");
     testRemoveNode();
 	

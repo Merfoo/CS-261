@@ -34,6 +34,15 @@ void initBSTree(struct BSTree *tree)
 {
 
   /* FIX ME */
+
+    /* Check if tree is null */
+    assert(tree);
+
+    /* Set tree root to null (0) */
+    tree->root = 0;
+
+    /* Set tree size to 0 */
+    tree->cnt = 0;
 }
 
 /*----------------------------------------------------------------------------*/
@@ -63,7 +72,16 @@ struct BSTree*  newBSTree()
 
 void _freeBST(struct Node *node)
 {
-    / * FIX ME */
+    /* FIX ME */
+
+    /* If node is not null, delete its children first */
+    if(node)
+    {
+        _freeBST(node->left);
+        _freeBST(node->right);
+        free(node->val);
+        free(node);    
+    }
 }
 
 /*----------------------------------------------------------------------------*/
@@ -129,6 +147,29 @@ int sizeBSTree(struct BSTree *tree) {
 struct Node *_addNode(struct Node *cur, TYPE val)
 {
    /*  FIX ME */
+
+    /* If cur is null, create new link with value val */
+    if(!cur)
+    {
+        cur = (struct Node*)malloc(sizeof(struct Node));
+        assert(cur);
+        cur->left = 0;
+        cur->right = 0;
+        cur->val = val;
+    }
+
+    else
+    {
+        /* Val is < than current nodes val, thus move left in tree */
+        if(compare(val, cur->val) == -1)
+            cur->left = _addNode(cur->left, val);
+
+        /* Val is >= than current nodes val, thus move right in tree */
+        else
+            cur->right = _addNode(cur->right, val);
+    }
+
+    return cur;
 }
 
 /*----------------------------------------------------------------------------*/
@@ -161,6 +202,28 @@ void addBSTree(struct BSTree *tree, TYPE val)
 int containsBSTree(struct Node *cur, TYPE val)
 {
    /*  FIX ME */
+
+    /* Loop through each node checking its nodes value, then its childerens */
+    while(cur)
+    {
+        /* Get compare value from compare function */
+        int compareVal = compare(cur->val, val);
+
+        /* Return true (1) if cur node val == val */
+        if(compareVal == 0)
+            return 1;
+
+        /* Else if cur node val < val travel to right node */
+        else if(compareVal == -1)
+            cur = cur->right;
+
+        /* Else cur node val > val travel to left node */
+        else
+            cur = cur->left;        
+    }
+
+    /* Return false (0) since no node val matched val */
+    return 0;
 }
 
 /*----------------------------------------------------------------------------*/
@@ -174,6 +237,16 @@ int containsBSTree(struct Node *cur, TYPE val)
 struct Node* _leftMost(struct Node *cur)
 {
    /*  FIX ME */
+
+    /* Check if cur is null */
+    assert(cur);
+
+    /* Loop left childs node */
+    while(cur->left)
+        cur = cur->left;
+
+    /* Return left most child, cur */
+    return cur;
 }
 
 /*----------------------------------------------------------------------------*/
@@ -191,6 +264,34 @@ struct Node* _leftMost(struct Node *cur)
 struct Node *_removeLeftMost(struct Node *cur)
 {
     /*  FIX ME */
+
+    /* Check if cur is null */
+    assert(cur);
+
+    /* If left is null, free cur and return right */
+    if(!cur->left)
+    {
+        struct Node* tmp = cur->right;
+        free(cur);
+        return tmp;
+    }
+
+    /* If left is not null, remove left most and return cur */
+    else if(cur->left)
+    {
+        struct Node* beforeLeft = cur;
+
+        while(beforeLeft->left->left)
+            beforeLeft = beforeLeft->left;
+
+        struct Node* leftRight = beforeLeft->left->right;
+        free(beforeLeft->left);
+        beforeLeft->left = leftRight;
+        return cur;
+    }
+
+    /* Should have returned before here */
+    return 0;
 }
 
 /*----------------------------------------------------------------------------*/
@@ -207,6 +308,55 @@ struct Node *_removeLeftMost(struct Node *cur)
 struct Node *_removeNode(struct Node *cur, TYPE val)
 {
    /*  FIX ME */
+
+    /* If cur is null that means val is not in the tree, print error msg */
+    if(!cur)
+    {
+        printf("WARNING: val not found in BSTree\n");
+        return 0;
+    }
+
+    int compareVal = compare(cur->val, val);
+
+    /* If cur val matches val replace it with left most of right child */
+    if(compareVal == 0)
+    {
+        /* If cur is a leaf just remove it */
+        if(!cur->left && !cur->right)
+        {
+            free(cur);
+            return 0;
+        }
+
+        /* If cur has a right child, replace cur val right left most right */
+        else if(cur->right)
+        {
+            struct Node* leftMost = _leftMost(cur->right);
+
+            cur->val = leftMost->val;
+            cur->right = _removeLeftMost(cur->right);
+        }
+
+        /* Else, replace cur val with left child */
+        else
+        {
+            struct Node* left = cur->left;
+            cur->val = left->val;
+            cur->left = left->left;
+            cur->right = left->right;
+            free(left);
+        }
+    }
+
+    /* If cur val < val go to right child */
+    else if(compareVal == -1)
+        cur->right = _removeNode(cur->right, val);
+
+    /* Else, cur val > val go to left child */
+    else
+        cur->left = _removeNode(cur->left, val);
+
+    return cur;
 }
 
 /*----------------------------------------------------------------------------*/
