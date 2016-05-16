@@ -79,8 +79,14 @@ void _freeBST(struct Node *node)
     {
         _freeBST(node->left);
         _freeBST(node->right);
-        free(node->val);
-        free(node);    
+
+        if(node->val)
+        {
+            free(node->val);
+            node->val = 0;
+        }
+        
+        free(node); 
     }
 }
 
