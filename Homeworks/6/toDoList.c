@@ -4,6 +4,44 @@
 #include <string.h>
 #include "toDoList.h"
 
+/* 
+ * Gets the task priority from the file, reads until tab '\t', or EOF
+ * Returns -1 if reaches EOF before reaching tab
+ */
+int getTaskPriority(FILE *filePtr)
+{
+    /* Create char array to hold task priority */
+    int priorityMaxLen = 3;
+    int priorityLen = 0;
+    char priorityArr[3];
+
+    /* Char to hold char in file */
+    char c;
+
+    /* Read numbers until tab or number limit reached */
+    while((c = fgetc(filePtr)) != EOF && c != '\t')
+    {
+        if(priorityLen < priorityMaxLen && c != '\n')
+            priorityArr[priorityLen++] = c;
+    }
+    
+    /* Return -1 if reached EOF */
+    if(c == EOF)
+        return -1;
+
+    /* Convert char to number */
+    int i = priorityLen - 1;
+    int numMod = 1;
+    int priority = 0;
+
+    for(i = priorityLen - 1; i >= 0; i--)
+    {
+        priority += (priorityArr[i] - '0') * numMod;
+        numMod *= 10;
+    }
+
+    return priority;
+}
 
 /*  Create a task from the description and the priority
 
@@ -38,6 +76,25 @@ TYPE createTask (int priority, char *desc)
 void saveList(DynArr *heap, FILE *filePtr)
 {
   	/* FIX ME */
+
+    /* Check if heap and filePtr are null */
+    assert(heap && filePtr);
+
+    /* Check if heap is empty */
+    assert(heap->data && sizeDynArr(heap) > 0);
+
+    /* Write data from heap to file in order of priority */
+    while(sizeDynArr(heap) > 0)
+    {
+        /* Get task with highest priority */
+        TYPE task = getMinHeap(heap);
+        
+        /* Write contents of the task into the file */
+        fprintf(filePtr, "%d\t%s\n", task.priority, task.description);
+        
+        /* Remove task from heap */
+        removeMinHeap(heap);
+    }
 }
 
 /*  Load the list from a file
@@ -51,6 +108,31 @@ void saveList(DynArr *heap, FILE *filePtr)
 void loadList(DynArr *heap, FILE *filePtr)
 {
   	/* FIX ME */
+
+    /* Check if heap and filePtr are null */
+    assert(heap && filePtr);
+
+    /* Read file for tasks */
+    while(1)
+    {
+        /* Read priority */
+        int priority = getTaskPriority(filePtr);
+
+        if(priority == -1)
+            break;
+
+        /* Read description */
+        char desc[TASK_DESC_SIZE];
+        fgets(desc, TASK_DESC_SIZE, filePtr);
+
+        /* Create a task from priority and description */
+        struct Task task;
+        strncpy(task.description, desc, TASK_DESC_SIZE);
+        task.priority = priority;
+
+        /* Add task to heap */
+        addHeap(heap, task);
+    }
 }
 
 /*  Print the list
@@ -63,6 +145,28 @@ void loadList(DynArr *heap, FILE *filePtr)
 void printList(DynArr *heap)
 {
   	/* FIX ME  */
+    
+    /* Check if heap is null and is empty */
+    assert(heap && heap->data && sizeDynArr(heap) > 0);
+
+    /* Creat tmp heap to store vals from heap when geting vals */
+    DynArr *tmpHeap = (DynArr *) malloc(sizeof(DynArr));
+    assert(tmpHeap);
+
+    /* Copy heap data to tmpHeap */
+    copyDynArr(heap, tmpHeap);
+
+    /* Remove from heap, print it, add to tmp heap */
+    while(sizeDynArr(tmpHeap) > 0)
+    {
+        struct Task task = getMinHeap(tmpHeap);
+        removeMinHeap(tmpHeap);
+
+        printf("%d\t%s\n", task.priority, task.description);
+    }
+
+    /* Free tmpHeap */
+    deleteDynArr(tmpHeap);
 }
 
 /*  Compare two tasks by priority
