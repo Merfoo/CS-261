@@ -4,6 +4,82 @@
 #include <time.h>
 #include "avl.h"
 
+int sumOfDiff(struct AVLnode *cur, int sum)
+{
+    if(!cur)
+        return -1;
+
+    int left = sum;
+    int right = sum;
+
+    printf("sum: %d\n", sum);
+
+    if(cur->left)
+    {
+        printf("l: %d\n", cur->left->val);
+        left = sumOfDiff(cur->left, sum + abs(cur->val - cur->left->val));
+    }
+
+    if(cur->right)
+    {
+        printf("r: %d\n", cur->right->val);
+        right = sumOfDiff(cur->right, sum + abs(cur->val - cur->right->val));
+    }
+
+    if(cur->left && cur->right)
+        return left < right ? left : right;
+
+    if(cur->left)
+        return left;
+
+    return right;        
+}
+
+int getMinPath(struct AVLnode *cur, int i, int *path)
+{
+    if(!cur->left && !cur->right)
+        return i;
+
+    printf("%d\n", i);
+
+    int curVal = cur->val;
+    int left = -1;
+    int right = -1;
+
+    if(cur->left)
+        left = sumOfDiff(cur->left, abs(curVal - cur->left->val));
+    
+    if(cur->right)
+        right = sumOfDiff(cur->right, abs(curVal - cur->right->val));
+
+    if(left != -1 && right != -1)
+    {
+        if( left < right)
+        {
+            path[i] = cur->left->val;
+            return getMinPath(cur->left, i + 1, path);
+        }
+
+        else
+        {
+            path[i] = cur->right->val;
+            return getMinPath(cur->right, i + 1, path);
+        }
+    }
+
+    else if(left != -1)
+    {
+        path[i] = cur->left->val;
+        return getMinPath(cur->left, i + 1, path);
+    }
+
+    else
+    {
+        path[i] = cur->right->val;
+        return getMinPath(cur->right, i + 1, path);
+    }
+}
+
 /* find minimum-cost path */
 /* Input: pointer to tree
           pointer to array that should store all node values from
@@ -16,7 +92,7 @@ int FindMinPath(struct AVLTree *tree, int *path)
 	int i = 1; /* counts the number of nodes along a path */
 
 	/* write this function */
-
+    i = getMinPath(cur, i, path);
 	
 	return i;
 }
@@ -43,8 +119,9 @@ int main()
 
 	/* Find the minimum-cost path in the AVL tree*/
 	pathArray[0] = tree->root->val;
-	len = FindminPath(tree, pathArray);
+	len = FindMinPath(tree, pathArray);
 
+    printf("%d\n", sumOfDiff(tree->root, 0));
 	/* Print out all numbers on the minimum-cost path */
 	printf("The minimum-cost path is: ");
 	for(i = 0; i < len; i++)

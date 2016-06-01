@@ -75,15 +75,25 @@ int bf(struct AVLnode * current)
 /* left-rotate subtree of current node */
 struct AVLnode * rotateLeft(struct AVLnode * current)
 {
-	/* write this function */ 
-
+	/* write this function */
+    struct AVLnode* newHead = current->right;
+    current->right = newHead->left;
+    newHead->left = current;
+    setHeight(current);
+    setHeight(newHead);
+    return newHead;
 }
 
 /* right-rotate subtree of current node */
 struct AVLnode * rotateRight(struct AVLnode * current)
 {
 	/* write this function */ 
-
+    struct AVLnode* newHead = current->left;
+    current->left = newHead->right;
+    newHead->right = current;
+    setHeight(current);
+    setHeight(newHead);
+    return newHead;
 }
 
 /* balance subtree of current node */
@@ -93,9 +103,25 @@ struct AVLnode * _balance(struct AVLnode * current)
 
 	/* write this function */ 
 
+    /* Rotate left */
+    if(cbf > 1)
+    {
+        if(bf(current->right) < 0)
+            current->right = rotateRight(current->right);
+
+        return rotateLeft(current);
+    }
+
+    /* Rotate right */
+    else if(cbf < -1)
+	{
+        if(bf(current->left) > 0)
+            current->left = rotateLeft(current->left);
+
+        return rotateRight(current);
+    }
 	
-	
-	
+    setHeight(current);
 	return current;
 }
 
@@ -105,9 +131,21 @@ struct AVLnode * AVLnodeAdd(struct	AVLnode * current, TYPE newValue)
 	struct AVLnode * newnode;
 
 	/* write this function */ 
+	if(current == 0)
+    {
+        newnode = (struct AVLnode*) malloc(sizeof(struct AVLnode));
+        newnode->val = newValue;
+        newnode->left = 0;
+        newnode->right = 0;
+        newnode->height = 0;
+        return newnode;
+    }
 	
-	
-	
+	else if(LT(current->val, newValue))
+        current->right = AVLnodeAdd(current->right, newValue);
+
+    else
+        current->left = AVLnodeAdd(current->left, newValue);
 	
 	return _balance(current);
 }
@@ -125,8 +163,19 @@ int containsAVLTree(struct AVLTree *tree, TYPE val)
 	struct AVLnode* cur = tree->root;
 
 	/* write this function */ 
+    while(cur)
+    {
+        if(EQ(cur->val, val))
+            return 1;
 
+        else if(LT(cur->val, val))
+            cur = cur->right;
 
+        else
+            cur = cur->left;
+    }
+
+    return 0;
 }
 
 /* find leftmost value from subtree of current node */
