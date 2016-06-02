@@ -63,7 +63,7 @@ void processFile(FILE *file)
         if(!word)
             break;
 
-        printf("Words! %s\n", word);
+        /*printf("Words! %s\n", word);*/
        
         if(containsKey(map, word))
             insertMap(map, word, *atMap(map, word) + 1);

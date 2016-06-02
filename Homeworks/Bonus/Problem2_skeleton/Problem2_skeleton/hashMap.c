@@ -67,6 +67,39 @@ void freeMap (struct hashMap * ht)
     free(ht->table);
 }
 
+void _resizeTable(struct hashMap *ht)
+{
+    int i;
+    struct hashMap *nht;
+    nht = (struct hashMap *) malloc(sizeof(struct hashMap));
+    assert(nht);
+
+    /*printf("Resizing table!\n");*/
+    initMap(nht, ht->tableSize * 2);
+
+    for(i = 0; i < ht->tableSize; i++)
+    {
+        struct hashLink *cur;
+        cur = ht->table[i];
+
+        while(cur)
+        {
+            struct hashLink *next;
+            next = cur->next;
+            
+            insertMap(nht, cur->key, cur->value);
+            free(cur);
+            cur = next;
+        }
+    }
+
+    free(ht->table);
+    ht->table = nht->table;
+    ht->tableSize = nht->tableSize;
+    ht->count = nht->count;
+    free(nht);
+}
+
 void insertMap (struct hashMap * ht, KeyType k, ValueType v)
 {  /*write this*/
     /*assert(ht);*/
@@ -95,6 +128,10 @@ void insertMap (struct hashMap * ht, KeyType k, ValueType v)
 
         ht->table[idx] = item;
         ht->count++;
+
+        /*printf("%d :: %d\n", ht->count, ht->tableSize);*/
+        if(tableLoad(ht) > 4)
+            _resizeTable(ht);
     }
 }
 
@@ -204,5 +241,5 @@ float tableLoad(struct hashMap *ht)
 {  /*write this*/
     assert(ht);
 
-    return (float) ht->count / (float) capacityMap(ht);
+    return (float) ht->count / (float) ht->tableSize;
 }
