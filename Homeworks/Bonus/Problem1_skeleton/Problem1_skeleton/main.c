@@ -4,27 +4,34 @@
 #include <time.h>
 #include "avl.h"
 
-int sumOfDiff(struct AVLnode *cur, int sum)
+int sumOfDiff(struct AVLnode *cur, int sum, int i, int *diffs)
 {
     if(!cur)
         return -1;
 
     int left = sum;
     int right = sum;
+    int leftChild = (i * 2) + 1;
+    int rightChild = (i * 2) + 2;
 
     printf("sum: %d\n", sum);
 
     if(cur->left)
     {
         printf("l: %d\n", cur->left->val);
-        left = sumOfDiff(cur->left, sum + abs(cur->val - cur->left->val));
+        int newSum = sum + abs(cur->val - cur->left->val);
+        left = sumOfDiff(cur->left, newSum, leftChild, diffs);
     }
 
     if(cur->right)
     {
         printf("r: %d\n", cur->right->val);
-        right = sumOfDiff(cur->right, sum + abs(cur->val - cur->right->val));
+        int newSum = sum + abs(cur->val - cur->right->val);
+        right = sumOfDiff(cur->right, newSum, rightChild, diffs);
     }
+    
+    diffs[leftChild] = cur->left ? left : -1;
+    diffs[rightChild] = cur->right ? right : -1;
 
     if(cur->left && cur->right)
         return left < right ? left : right;
@@ -35,49 +42,67 @@ int sumOfDiff(struct AVLnode *cur, int sum)
     return right;        
 }
 
-int getMinPath(struct AVLnode *cur, int i, int *path)
+int *calcDiffs(struct AVLTree *tree)
 {
-    if(!cur->left && !cur->right)
-        return i;
+    int *diffs = (int *) malloc(sizeof(int) * tree->cnt);
+    assert(diffs);
 
-    printf("%d\n", i);
+    diffs[0] = 0;
+    sumOfDiff(tree->root, 0, 0, diffs);
+    return diffs;
+}
 
-    int curVal = cur->val;
-    int left = -1;
-    int right = -1;
-
-    if(cur->left)
-        left = sumOfDiff(cur->left, abs(curVal - cur->left->val));
+int getMinPath(struct AVLnode *cur, int *path, int *diffs)
+{
+    int len = 1;
+    int parent = 0;
     
-    if(cur->right)
-        right = sumOfDiff(cur->right, abs(curVal - cur->right->val));
-
-    if(left != -1 && right != -1)
+    while(diffs[parent] != -1 && cur)
     {
-        if( left < right)
+        int leftChild = (parent * 2) + 1;
+        int rightChild = (parent * 2) + 2;
+        int left = diffs[leftChild];
+        int right = diffs[rightChild];
+        int leftSmaller = 1;
+
+        if(!cur->left && !cur->right)
         {
-            path[i] = cur->left->val;
-            return getMinPath(cur->left, i + 1, path);
+            if(left < right)
+                leftSmaller = 1;
+
+            else
+                leftSmaller = 0;
+        }   
+
+        else if(cur->left)
+            leftSmaller = 1;
+
+        else
+            leftSmaller = 0;
+
+        if(leftSmaller)
+        {
+            printf("left\n");
+            cur = cur->left;
+            parent = leftChild;
         }
 
         else
         {
-            path[i] = cur->right->val;
-            return getMinPath(cur->right, i + 1, path);
+            printf("right\n");
+            cur = cur->right;
+            parent = rightChild;
         }
+
+        if(!cur)
+            break;
+        printf("pls\n");
+        printf("%d || %d\n", diffs[parent], diffs[rightChild]);
+        printf("%d\n", cur->val);
+        path[len++] = cur->val;
     }
 
-    else if(left != -1)
-    {
-        path[i] = cur->left->val;
-        return getMinPath(cur->left, i + 1, path);
-    }
-
-    else
-    {
-        path[i] = cur->right->val;
-        return getMinPath(cur->right, i + 1, path);
-    }
+    return len;
 }
 
 /* find minimum-cost path */
@@ -92,8 +117,10 @@ int FindMinPath(struct AVLTree *tree, int *path)
 	int i = 1; /* counts the number of nodes along a path */
 
 	/* write this function */
-    i = getMinPath(cur, i, path);
-	
+    int *diffs = calcDiffs(tree);
+    i = getMinPath(cur, path, diffs);
+    /*free(diffs);	*/
+
 	return i;
 }
 
@@ -121,7 +148,6 @@ int main()
 	pathArray[0] = tree->root->val;
 	len = FindMinPath(tree, pathArray);
 
-    printf("%d\n", sumOfDiff(tree->root, 0));
 	/* Print out all numbers on the minimum-cost path */
 	printf("The minimum-cost path is: ");
 	for(i = 0; i < len; i++)
