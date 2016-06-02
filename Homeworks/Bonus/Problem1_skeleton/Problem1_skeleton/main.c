@@ -14,18 +14,18 @@ int sumOfDiff(struct AVLnode *cur, int sum, int i, int *diffs)
     int leftChild = (i * 2) + 1;
     int rightChild = (i * 2) + 2;
 
-    printf("sum: %d\n", sum);
+    /*printf("sum: %d\n", sum);*/
 
     if(cur->left)
     {
-        printf("l: %d\n", cur->left->val);
+        /*printf("l: %d\n", cur->left->val);*/
         int newSum = sum + abs(cur->val - cur->left->val);
         left = sumOfDiff(cur->left, newSum, leftChild, diffs);
     }
 
     if(cur->right)
     {
-        printf("r: %d\n", cur->right->val);
+        /*printf("r: %d\n", cur->right->val);*/
         int newSum = sum + abs(cur->val - cur->right->val);
         right = sumOfDiff(cur->right, newSum, rightChild, diffs);
     }
@@ -57,7 +57,7 @@ int getMinPath(struct AVLnode *cur, int *path, int *diffs)
     int len = 1;
     int parent = 0;
     
-    while(diffs[parent] != -1 && cur)
+    while(1)
     {
         int leftChild = (parent * 2) + 1;
         int rightChild = (parent * 2) + 2;
@@ -65,7 +65,8 @@ int getMinPath(struct AVLnode *cur, int *path, int *diffs)
         int right = diffs[rightChild];
         int leftSmaller = 1;
 
-        if(!cur->left && !cur->right)
+        /*printf("l: %d || r: %d\n", diffs[leftChild], diffs[rightChild]);*/
+        if(cur->left && cur->right)
         {
             if(left < right)
                 leftSmaller = 1;
@@ -82,23 +83,19 @@ int getMinPath(struct AVLnode *cur, int *path, int *diffs)
 
         if(leftSmaller)
         {
-            printf("left\n");
             cur = cur->left;
             parent = leftChild;
         }
 
         else
         {
-            printf("right\n");
             cur = cur->right;
             parent = rightChild;
         }
 
         if(!cur)
             break;
-        printf("pls\n");
-        printf("%d || %d\n", diffs[parent], diffs[rightChild]);
-        printf("%d\n", cur->val);
+        
         path[len++] = cur->val;
     }
 
@@ -119,7 +116,6 @@ int FindMinPath(struct AVLTree *tree, int *path)
 	/* write this function */
     int *diffs = calcDiffs(tree);
     i = getMinPath(cur, path, diffs);
-    /*free(diffs);	*/
 
 	return i;
 }
